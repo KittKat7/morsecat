@@ -1,0 +1,13 @@
+/**
+ * (c) 2026 KittKat
+ */
+.table th:nth-child(odd) {
+    width: 10%;
+}
+.table th:nth-child(even) {
+    width: 15%;
+}
+.codespace {
+    white-space: pre-wrap;
+    font-family: monospace;
+}

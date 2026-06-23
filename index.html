@@ -1,79 +1,15 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
-    <meta version="0.0.1">
+    <meta version="0.0.2">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Morse Cat</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    <script>
-        addEventListener("DOMContentLoaded", (event) => {initBindings()})
-        let keyState = false;
 
-        let audioCtx = new(window.AudioContext || window.webkitAudioContext)();
-        // create Oscillator node
-        let oscillator;
-        const gainNode = audioCtx.createGain();
-        gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime); // 50% volume
-        gainNode.connect(audioCtx.destination);
-
-        oscillator = audioCtx.createOscillator();
-        oscillator.type = 'square';
-        oscillator.frequency.value = 475; // value in hertz
-        oscillator.connect(gainNode);
-
-        function initBindings() {
-            document.body.addEventListener("keydown", function(e) {
-                if (e.key == "x" || e.key == "X") {
-                    keyDown();
-                }
-            });
-            document.body.addEventListener("keyup", function(e) {
-                if (e.key == "x" || e.key == "X") {
-                    keyUp();
-                }
-            });
-            document.getElementById("key").addEventListener("mousedown", function(e) {
-                keyDown();
-            });
-            document.getElementById("key").addEventListener("mouseup", function(e) {
-                keyUp();
-            });
-        }
-
-        function keyDown() {
-            if (keyState) return;
-            keyState = true;
-            document.getElementById("key").classList.remove("btn-primary");
-            document.getElementById("key").classList.add("btn-danger");
-            console.log("down ");
-            oscillator.start();
-        }
-        function keyUp() {
-            console.log("up ");
-            keyState = false;
-            document.getElementById("key").classList.add("btn-primary");
-            document.getElementById("key").classList.remove("btn-danger");
-            oscillator.stop();
-            oscillator = audioCtx.createOscillator();
-            oscillator.type = 'square';
-            oscillator.frequency.value = 475; // value in hertz
-            oscillator.connect(gainNode);
-        }
-    </script>
-    <style>
-        .table th:nth-child(1),
-        .table th:nth-child(3),
-        .table th:nth-child(5) {
-            width: 9%;
-        }
-        .table th:nth-child(2),
-        .table th:nth-child(4),
-        .table th:nth-child(6) {
-            width: 24%;
-        }
-    </style>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./script.js"></script>
 </head>
 <body class="container">
     <nav class="navbar navbar-expand-lg bg-body-tertiary">
@@ -87,16 +23,19 @@
     </div>
 
     <div class="pb-5">
-        <div id="letterbox" class="alert alert-info">
-            <h1 class="text-center">LETTER HERE</h1>
-            <h2 class="text-center">CODE HERE</h2>
+        <div id="letterbox" class="alert alert-info text-center">
+            <p>Click to enter text or code, then use the play button to hear it.</p>
+            <h2 id="comptext" class="codespace">Hello World</h1>
+            <h2 id="compcode" class="codespace"></h2>
             <hr>
-            <h2 class="text-center">YOUR CODE HERE</h2>
-            <div class="row text-center">
-                <span class="col"><button id="key" class="btn btn-primary">Key</button></span>
+            <p>Key in Morse code and it will apear (and be decoded) here.</p>
+            <h2 id="usertext" class="codespace"> </h2>
+            <h2 class="codespace"><span id="usercode"> </span><span id="usercodelead"></span></h2>
+            <div class="row">
+                <span class="col"><button id="key" class="btn btn-primary">Key (or press x)</button></span>
             </div>
             <hr>
-            <div class="row text-center pb-0">
+            <div class="row pb-0">
                 <span class="col"><button class="btn btn-primary">a</button></span>
                 <span class="col"><button class="btn btn-primary">b</button></span>
             </div>
@@ -114,6 +53,8 @@
                 <th>Timing Units</th>
                 <th>Char</th>
                 <th>Timing Units</th>
+                <th>Char</th>
+                <th>Timing Units</th>
             </tr>
             <tr>
                 <td>.</td>
@@ -122,20 +63,26 @@
                 <td>3 units</td>
                 <td>(signal space)</td>
                 <td>1 unit</td>
-            </tr>
-            <tr>
                 <td>(letter space)</td>
                 <td>3 units</td>
+            </tr>
+            <tr>
                 <td>(word space)</td>
                 <td>7 units</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
                 <td></td>
                 <td></td>
             </tr>
         </table>
 
         <h3 class="text-center">Alpha</h3>
-        <table class="table table-hover table-striped-columns">
+        <table class="code-table table table-hover table-striped-columns">
             <tr>
+                <th>Letter</th>
+                <th>Code</th>
                 <th>Letter</th>
                 <th>Code</th>
                 <th>Letter</th>
@@ -150,24 +97,22 @@
                 <td>-...</td>
                 <td>C</td>
                 <td>-.-.</td>
-            </tr>
-            <tr>
                 <td>D</td>
                 <td>-..</td>
+            </tr>
+            <tr>
                 <td>E</td>
                 <td>.</td>
                 <td>F</td>
                 <td>..-.</td>
-            </tr>
-            <tr>
                 <td>G</td>
                 <td>--.</td>
                 <td>H</td>
                 <td>....</td>
-                <td>I</td>
-                <td>..</td>
             </tr>
             <tr>
+                <td>I</td>
+                <td>..</td>
                 <td>J</td>
                 <td>.---</td>
                 <td>K</td>
@@ -182,24 +127,22 @@
                 <td>-.</td>
                 <td>O</td>
                 <td>---</td>
-            </tr>
-            <tr>
                 <td>P</td>
                 <td>.--.</td>
+            </tr>
+            <tr>
                 <td>Q</td>
                 <td>--.-</td>
                 <td>R</td>
                 <td>.-.</td>
-            </tr>
-            <tr>
                 <td>S</td>
                 <td>...</td>
                 <td>T</td>
                 <td>-</td>
-                <td>U</td>
-                <td>..-</td>
             </tr>
             <tr>
+                <td>U</td>
+                <td>..-</td>
                 <td>V</td>
                 <td>...-</td>
                 <td>W</td>
@@ -214,12 +157,16 @@
                 <td>--..</td>
                 <td></td>
                 <td></td>
+                <td></td>
+                <td></td>
             </tr>
         </table>
 
         <h3 class="text-center">Numeric</h3>
-        <table class="table table-hover table-striped-columns">
+        <table class="code-table table table-hover table-striped-columns">
             <tr>
+                <th>Number</th>
+                <th>Code</th>
                 <th>Number</th>
                 <th>Code</th>
                 <th>Number</th>
@@ -234,24 +181,22 @@
                 <td>..---</td>
                 <td>3</td>
                 <td>...--</td>
-            </tr>
-            <tr>
                 <td>4</td>
                 <td>....-</td>
+            </tr>
+            <tr>
                 <td>5</td>
                 <td>.....</td>
                 <td>6</td>
                 <td>-....</td>
-            </tr>
-            <tr>
                 <td>7</td>
                 <td>--...</td>
                 <td>8</td>
                 <td>---..</td>
-                <td>9</td>
-                <td>----.</td>
             </tr>
             <tr>
+                <td>9</td>
+                <td>----.</td>
                 <td>0</td>
                 <td>-----</td>
                 <td></td>
@@ -262,8 +207,10 @@
         </table>
 
         <h3 class="text-center">Symbols</h3>
-        <table class="table table-hover table-striped-columns">
+        <table class="code-table table table-hover table-striped-columns">
             <tr>
+                <th>Symbol</th>
+                <th>Code</th>
                 <th>Symbol</th>
                 <th>Code</th>
                 <th>Symbol</th>
@@ -278,14 +225,18 @@
                 <td>--..--</td>
                 <td>?</td>
                 <td>..--..</td>
-            </tr>
-            <tr>
                 <td>+</td>
                 <td>.-.-.</td>
+            </tr>
+            <tr>
                 <td>-</td>
                 <td>-....-</td>
                 <td>;</td>
                 <td>-.-.-.</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
             </tr>
         </table>
 
@@ -296,26 +247,34 @@
                 <th>Code</th>
                 <th>Shorthand</th>
                 <th>Code</th>
-                <th>Shorthand</th>
-                <th>Code</th>
             </tr>
             <tr>
                 <td>SOS (int distress)</td>
                 <td>... --- ...</td>
                 <td>CQ (call anyone)</td>
                 <td>-.-. --.-</td>
-                <td>AR (end message)</td>
-                <td>.- .-.</td>
             </tr>
             <tr>
+                <td>AR (end message)</td>
+                <td>.- .-.</td>
                 <td>SK (end contact)</td>
                 <td>... -.-</td>
+            </tr>
+            <tr>
                 <td>BT (break)</td>
                 <td>-... -</td>
                 <td>73 (best regards)</td>
                 <td>--... ...--</td>
             </tr>
         </table>
+    </div>
+
+    <div class="container pb-5">
+        <h2>References</h2>
+        <ul>
+            <li><a href="https://upliftorch.com/tools/morse-code/en/blog/morse-wpm-paris.html">Word per minute explenation</a></li>
+            <li><a href="https://www.arrl.org/code-practice-files">ARRL code practice files (W1AW)</a></li>
+        </ul>
     </div>
 </body>
 </html>

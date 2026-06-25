@@ -11,8 +11,8 @@ wpm = 7;
 addEventListener("DOMContentLoaded", (event) => {
     initBindings();
     loadLookupList();
-    text = document.getElementById("comptext").textContent;
-    document.getElementById("compcode").textContent = encode(text);
+    text = document.getElementById("comptext").value = "Hello World";
+    document.getElementById("compcode").value = encode(text);
     setVolume();
 });
 
@@ -199,8 +199,6 @@ function initBindings() {
     document.getElementById("clear-user-btn").addEventListener("click", function (e) {
         clearUser();
     });
-    document.getElementById("comptext").value = "Hello World";
-    document.getElementById("compcode").value = encode("Hello World");
 }
 
 function volumeDown() {

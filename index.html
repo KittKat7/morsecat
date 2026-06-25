@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
-    <meta version="0.0.2">
+    <meta version="0.1.0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Morse Cat</title>
@@ -25,19 +25,32 @@
     <div class="pb-5">
         <div id="letterbox" class="alert alert-info text-center">
             <p>Click to enter text or code, then use the play button to hear it.</p>
-            <h2 id="comptext" class="codespace">Hello World</h1>
-            <h2 id="compcode" class="codespace"></h2>
+            <div class="input-group nbsp code">
+                <span class="input-group-text bg-transparent border-0 fs-2">&nbsp;</span>
+                <input id="comptext" type="text" class="form-control text-center fs-2 bg-transparent border-0 nbsp code">
+                <button id="encode-btn" class="fs-2 btn btn-secondary">⇓</button>
+            </div>
+            <div class="input-group nbsp code">
+                <button id="play-code-button" class="fs-2 btn btn-primary">🢖</button>
+                <input id="compcode" type="text" class="form-control text-center fs-2 bg-transparent border-0 nbsp code">
+                <button id="decode-btn" class="fs-2 btn btn-secondary">⇑</button>
+            </div>
             <hr>
             <p>Key in Morse code and it will apear (and be decoded) here.</p>
-            <h2 id="usertext" class="codespace"> </h2>
-            <h2 class="codespace"><span id="usercode"> </span><span id="usercodelead"></span></h2>
+            <h2 id="usertext" class="nbsp code"> </h2>
+            <h2 class="nbsp code"><span id="usercode"> </span><span id="usercodelead"></span></h2>
             <div class="row">
                 <span class="col"><button id="key" class="btn btn-primary">Key (or press x)</button></span>
             </div>
             <hr>
             <div class="row pb-0">
+                <span class="col code">
+                    <button id="volume-down" class="btn btn-outline-secondary">-</button>
+                    &nbsp;<span id="volume-display">10%</span>&nbsp;🔉&nbsp;
+                    <button id="volume-up" class="btn btn-outline-secondary">+</button>
+                </span>
                 <span class="col"><button class="btn btn-primary">a</button></span>
-                <span class="col"><button class="btn btn-primary">b</button></span>
+                <span class="col"><button id="clear-user-btn" class="btn btn-primary">Reset</button></span>
             </div>
         </div>
     </div>

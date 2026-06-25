@@ -6,22 +6,27 @@ let lookuplist = [
     [" ", " / "],
 ];
 
-const defaultWPM = 12;
+wpm = 7;
 
 addEventListener("DOMContentLoaded", (event) => {
     initBindings();
     loadLookupList();
     text = document.getElementById("comptext").textContent;
     document.getElementById("compcode").textContent = encode(text);
+    setVolume();
 });
+
+const delay = ms => new Promise(r => setTimeout(r, ms));
 
 let keyState = false;
 
 let audioCtx = new(window.AudioContext || window.webkitAudioContext)();
 // create Oscillator node
 let oscillator;
+let volume = 25;
+
 const gainNode = audioCtx.createGain();
-gainNode.gain.setValueAtTime(0.2, audioCtx.currentTime); // 50% volume
+gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
 gainNode.connect(audioCtx.destination);
 
 oscillator = audioCtx.createOscillator();
@@ -40,12 +45,13 @@ function encodeChar(text) {
 }
 
 function decodeChar(text) {
+    if (!text.trim()) return "";
     for (let i = 0; i < lookuplist.length; i++) {
         if (lookuplist[i][1] == text.toUpperCase()) {
             return lookuplist[i][0];
         }
     }
-    return String.fromCodePoint(0xFFFD);
+    return "🗆";
 }
 
 function encode(text) {
@@ -75,6 +81,27 @@ timerUnitcount = 0;
 timerDownUnitcount = 0;
 message = "";
 
+async function playCode(code) {
+    let unit = wpmToUnit(wpm);
+    for (let i = 0; i < code.length; i++) {
+        let c = code[i];
+        if (c == ".") {
+            oscPlay();
+            await delay(unit);
+        } else if (c == "-") {
+            oscPlay();
+            await delay(unit * 3);
+        } else if (c == " " || c == "/") {
+            await delay(unit * 2);
+            continue;
+        } else {
+            continue;
+        }
+        oscStop();
+        await delay(unit);
+    }
+}
+
 // Starts the timer
 function timerStart() {
     clearInterval(timerDown);
@@ -92,7 +119,7 @@ function timerStart() {
         } else {
             timerUnitcount += 1;
         }
-    }, wpmToUnit(defaultWPM) * 1.05);
+    }, wpmToUnit(wpm) * 1.05);
 }
 
 function timerStop() {
@@ -111,7 +138,7 @@ function timerStop() {
         } else {
             timerDownUnitcount += 1;
         }
-    }, wpmToUnit(defaultWPM) * 1.05);
+    }, wpmToUnit(wpm) * 1.05);
 }
 
 function wpmToUnit(wpm) {
@@ -154,26 +181,78 @@ function initBindings() {
     document.getElementById("key").addEventListener("mouseup", function(e) {
         keyUp();
     });
+    document.getElementById("volume-down").addEventListener("click", function (e) {
+        volumeDown();
+    });
+    document.getElementById("volume-up").addEventListener("click", function (e) {
+        volumeUp();
+    });
+    document.getElementById("encode-btn").addEventListener("click", function (e) {
+        document.getElementById("compcode").value = encode(document.getElementById("comptext").value);
+    });
+    document.getElementById("decode-btn").addEventListener("click", function (e) {
+        document.getElementById("comptext").value = decode(document.getElementById("compcode").value);
+    });
+    document.getElementById("play-code-button").addEventListener("click", function (e) {
+        playCode(document.getElementById("compcode").value);
+    });
+    document.getElementById("clear-user-btn").addEventListener("click", function (e) {
+        clearUser();
+    });
 }
+
+function volumeDown() {
+    volume -= 5;
+    if (volume < 0) volume = 0;
+    setVolume();
+}
+
+function volumeUp() {
+    volume += 5;
+    if (volume > 100) volume = 100;
+    setVolume();
+}
+
+function setVolume() {
+    gainNode.gain.setValueAtTime(volume / 600, audioCtx.currentTime);
+    text = volume + "%";
+    text = " ".repeat(4 - text.length) + text;
+    document.getElementById("volume-display").textContent = text;
+}
+
 
 function keyDown() {
     if (keyState) return;
     keyState = true;
     document.getElementById("key").classList.remove("btn-primary");
     document.getElementById("key").classList.add("btn-danger");
-    oscillator.start();
+    oscPlay();
     timerStart();
 }
 function keyUp() {
     keyState = false;
     document.getElementById("key").classList.add("btn-primary");
     document.getElementById("key").classList.remove("btn-danger");
-    oscillator.stop();
+    oscStop();
     timerStop();
     document.getElementById("usertext").textContent = decode(message);
     document.getElementById("usercode").textContent = message;
+}
+
+function oscPlay() {
+    oscillator.start();
+}
+
+function oscStop() {
+    oscillator.stop();
     oscillator = audioCtx.createOscillator();
     oscillator.type = 'square';
     oscillator.frequency.value = 475; // value in hertz
     oscillator.connect(gainNode);
+}
+
+function clearUser() {
+    message = "";
+    document.getElementById("usertext").textContent = " ";
+    document.getElementById("usercode").textContent = " ";
 }

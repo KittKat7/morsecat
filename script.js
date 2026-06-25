@@ -199,6 +199,8 @@ function initBindings() {
     document.getElementById("clear-user-btn").addEventListener("click", function (e) {
         clearUser();
     });
+    document.getElementById("comptext").value = "Hello World";
+    document.getElementById("compcode").value = encode("Hello World");
 }
 
 function volumeDown() {
